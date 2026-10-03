@@ -58,5 +58,95 @@
 "tempMin": 18, "tempMax": 32,
 "humidityMin": 40, "humidityMax": 75,
 "nMin": 40, "pMin": 25, "kMin": 120
+},
+{
+"name": "Coriander",
+"areaTypes": ["balcony", "rooftop", "indoor"],
+"sunHoursMin": 3, "sunHoursMax": 6,
+"minSpaceCm2": 600,
+"moistureMin": 45, "moistureMax": 70,
+"tempMin": 15, "tempMax": 30,
+"humidityMin": 40, "humidityMax": 70,
+"nMin": 30, "pMin": 15, "kMin": 70
+},
+{
+"name": "Spinach",
+"areaTypes": ["balcony", "rooftop"],
+"sunHoursMin": 3, "sunHoursMax": 6,
+"minSpaceCm2": 800,
+"moistureMin": 50, "moistureMax": 75,
+"tempMin": 12, "tempMax": 28,
+"humidityMin": 50, "humidityMax": 80,
+"nMin": 40, "pMin": 20, "kMin": 80
+},
+{
+"name": "Snake Plant",
+"areaTypes": ["indoor", "balcony"],
+"sunHoursMin": 1, "sunHoursMax": 6,
+"minSpaceCm2": 500,
+"moistureMin": 10, "moistureMax": 35,
+"tempMin": 15, "tempMax": 35,
+"humidityMin": 20, "humidityMax": 60,
+"nMin": 10, "pMin": 5, "kMin": 40
+},
+{
+"name": "Hibiscus",
+"areaTypes": ["balcony", "rooftop"],
+"sunHoursMin": 6, "sunHoursMax": 10,
+"minSpaceCm2": 1500,
+"moistureMin": 40, "moistureMax": 70,
+"tempMin": 18, "tempMax": 35,
+"humidityMin": 50, "humidityMax": 80,
+"nMin": 30, "pMin": 20, "kMin": 100
+},
+{
+"name": "Marigold",
+"areaTypes": ["balcony", "rooftop"],
+"sunHoursMin": 6, "sunHoursMax": 10,
+"minSpaceCm2": 800,
+"moistureMin": 35, "moistureMax": 60,
+"tempMin": 18, "tempMax": 35,
+"humidityMin": 40, "humidityMax": 70,
+"nMin": 25, "pMin": 15, "kMin": 90
+},
+{
+"name": "Curry Leaf",
+"areaTypes": ["balcony", "rooftop"],
+"sunHoursMin": 5, "sunHoursMax": 8,
+"minSpaceCm2": 1500,
+"moistureMin": 40, "moistureMax": 65,
+"tempMin": 20, "tempMax": 38,
+"humidityMin": 40, "humidityMax": 75,
+"nMin": 35, "pMin": 15, "kMin": 90
+},
+{
+"name": "Lemongrass",
+"areaTypes": ["balcony", "rooftop"],
+"sunHoursMin": 6, "sunHoursMax": 10,
+"minSpaceCm2": 1200,
+"moistureMin": 40, "moistureMax": 70,
+"tempMin": 20, "tempMax": 38,
+"humidityMin": 50, "humidityMax": 85,
+"nMin": 30, "pMin": 15, "kMin": 80
+},
+{
+"name": "Methi (Fenugreek)",
+"areaTypes": ["balcony", "rooftop", "indoor"],
+"sunHoursMin": 3, "sunHoursMax": 6,
+"minSpaceCm2": 600,
+"moistureMin": 40, "moistureMax": 65,
+"tempMin": 15, "tempMax": 30,
+"humidityMin": 40, "humidityMax": 70,
+"nMin": 25, "pMin": 15, "kMin": 60
+},
+{
+"name": "Spider Plant",
+"areaTypes": ["indoor", "balcony"],
+"sunHoursMin": 1, "sunHoursMax": 4,
+"minSpaceCm2": 500,
+"moistureMin": 30, "moistureMax": 60,
+"tempMin": 15, "tempMax": 32,
+"humidityMin": 40, "humidityMax": 70,
+"nMin": 15, "pMin": 8, "kMin": 60
 }
 ]
