@@ -74,7 +74,7 @@
   </div>
 
   <div class="card fact">
-    <h2>🌿 Fact of the day</h2>
+    <h2>🌿 Did you know?</h2>
     <div id="fact"></div>
   </div>
 
@@ -145,7 +145,14 @@
     "Bean flowers start to drop above about 32 C, so hot spells can cut your harvest.",
     "Spinach likes cool weather, about 13 to 16 C. It bolts in heat, which is why Mumbai is hard for it.",
     "Irrigation guidance (FAO-56) lets spinach lose only 20 percent of usable soil water before stress, but tomato 40 percent.",
-    "Most vegetables like soil that stays evenly moist, not soggy. That is what the moisture sensor tracks."
+    "Most vegetables like soil that stays evenly moist, not soggy. That is what the moisture sensor tracks.",
+    "A tomato in a pot needs at least a 5 gallon container, about 19 litres, for each plant.",
+    "Mint tastes best when picked young, late in the morning on a dry sunny day.",
+    "Pick green beans before the seeds bulge inside the pod. Bush beans are usually ready in 48 to 60 days.",
+    "Radishes left too long in the soil split and turn woody, so pull them on time.",
+    "Cucumbers grow best in hot days around 27 to 32 C, and slow down when it falls below about 15 C.",
+    "A resistive soil sensor measures how easily current passes between its two prongs. Wet soil conducts better.",
+    "Hot weather dries soil faster, so irrigation guidance says to water earlier when it is hot."
   ];
 
   function closeSplash() {
@@ -154,7 +161,11 @@
     setTimeout(function () { s.style.display = "none"; }, 650);
   }
 
-  document.getElementById("fact").textContent = FACTS[Math.floor(Date.now() / 86400000) % FACTS.length];
+  var factIdx = Math.floor(Math.random() * FACTS.length);
+  var lastFact = load("lastFact");
+  if (lastFact !== null && Number(lastFact) === factIdx) { factIdx = (factIdx + 1) % FACTS.length; }
+  store("lastFact", String(factIdx));
+  document.getElementById("fact").textContent = FACTS[factIdx];
 
   function getPlants() {
     if (plantsCache) return Promise.resolve(plantsCache);
