@@ -1,39 +1,393 @@
-<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Smart Garden</title> <style> body { font-family: Arial, sans-serif; max-width: 520px; margin: 30px auto; padding: 0 15px; } label { display: block; margin-top: 12px; font-weight: bold; } input, select { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; } button { margin-top: 14px; padding: 10px 16px; background: #2e7d32; color: white; border: none; border-radius: 6px; font-size: 16px; } button.small { padding: 6px 10px; font-size: 14px; margin-top: 6px; } button.grey { background: #757575; } .box { margin-top: 16px; padding: 12px; border-radius: 6px; line-height: 1.6; } #result { background: #e8f5e9; display: none; } .section { display: none; margin-top: 28px; border-top: 2px solid #ccc; padding-top: 8px; } #readings { background: #e3f2fd; } #pump { background: #f3e5f5; } #harvest { background: #fff8e1; } .alert { background: #ffebee; border-left: 5px solid #c62828; } .notice { background: #fff3e0; border-left: 5px solid #ef6c00; } .info { background: #e8f5e9; border-left: 5px solid #2e7d32; } .best { font-size: 20px; font-weight: bold; color: #1b5e20; } .limits { font-size: 14px; color: #444; margin-top: 8px; } .small { font-size: 13px; color: #666; } </style> </head> <body> <h1>Smart Garden 🌱</h1> <p>Tell us about your space.</p>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Garden</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #f1f8e9; color: #1f2d1f; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 14px 40px; }
+  .hero { background: linear-gradient(135deg, #2e7d32, #66bb6a); color: #fff; padding: 28px 18px 34px; border-radius: 0 0 22px 22px; margin: 0 -14px 18px; }
+  .hero h1 { margin: 0; font-size: 28px; }
+  .hero p { margin: 6px 0 0; opacity: 0.92; }
+  .card { background: #fff; border-radius: 14px; padding: 16px; margin-top: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+  .card h2 { margin: 0 0 8px; font-size: 18px; color: #2e7d32; }
+  label { display: block; margin-top: 12px; font-weight: 600; font-size: 14px; }
+  input, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #c5d9c5; border-radius: 8px; font-size: 15px; background: #fafffa; }
+  .row { display: flex; gap: 10px; }
+  .row > div { flex: 1; }
+  button { margin-top: 14px; padding: 11px 18px; background: #2e7d32; color: #fff; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
+  button:hover { background: #256528; }
+  button:disabled { background: #9e9e9e; cursor: default; }
+  button.small { padding: 6px 10px; font-size: 13px; margin-top: 6px; border-radius: 8px; }
+  button.grey { background: #757575; }
+  button.ghost { background: #e8f5e9; color: #2e7d32; }
+  .box { margin-top: 10px; padding: 12px; border-radius: 10px; line-height: 1.6; }
+  #result { display: none; background: #e8f5e9; }
+  .section { display: none; }
+  #readings { background: #e3f2fd; }
+  #pump { background: #f3e5f5; }
+  #harvest { background: #fff8e1; }
+  .alert { background: #ffebee; border-left: 5px solid #c62828; }
+  .notice { background: #fff3e0; border-left: 5px solid #ef6c00; }
+  .info { background: #e8f5e9; border-left: 5px solid #2e7d32; }
+  .best { font-size: 22px; font-weight: 700; color: #1b5e20; }
+  .limits { font-size: 14px; color: #444; margin-top: 8px; }
+  .small { font-size: 13px; color: #666; }
+  .fact { background: linear-gradient(135deg, #fffde7, #f1f8e9); border: 1px solid #e6ee9c; }
+  #splash { position: fixed; inset: 0; background: linear-gradient(160deg, #1b5e20, #66bb6a); z-index: 99; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s; }
+  #splash.hide { opacity: 0; pointer-events: none; }
+  .sbox { width: 88%; max-width: 380px; text-align: center; color: #fff; }
+  .plant { position: relative; height: 110px; width: 60px; margin: 0 auto 10px; }
+  .pot { position: absolute; bottom: 0; left: 8px; width: 44px; height: 24px; background: #8d6e63; border-radius: 0 0 10px 10px; }
+  .stem { position: absolute; bottom: 24px; left: 27px; width: 6px; height: 0; background: #c8e6c9; border-radius: 3px; animation: grow 3s ease-out forwards; }
+  .leaf { position: absolute; width: 28px; height: 16px; background: #e8f5e9; opacity: 0; animation: pop 0.6s forwards; }
+  .l1 { bottom: 70px; left: 31px; border-radius: 0 100% 0 100%; animation-delay: 1.6s; }
+  .l2 { bottom: 88px; left: 3px; border-radius: 100% 0 100% 0; animation-delay: 2.3s; }
+  @keyframes grow { to { height: 80px; } }
+  @keyframes pop { to { opacity: 1; } }
+  .bar { height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; margin: 14px 0; }
+  .fill { height: 100%; width: 0; background: #fff; animation: load 3s linear forwards; }
+  @keyframes load { to { width: 100%; } }
+  .tip { min-height: 66px; font-size: 16px; line-height: 1.5; }
+  #splash button { background: #fff; color: #1b5e20; font-weight: 600; margin: 6px 4px 0; }
+  #splash button.ghost { background: rgba(255,255,255,0.22); color: #fff; }
+  #splash button:disabled { background: rgba(255,255,255,0.4); color: #e8f5e9; }
+</style>
+</head>
+<body>
 
-<label>Length (cm)</label>
-<input type="number" id="length" placeholder="e.g. 150">
-
-<label>Breadth (cm)</label>
-<input type="number" id="breadth" placeholder="e.g. 60">
-
-<label>Area type</label>
-<select id="areaType">
-<option value="balcony">Balcony</option>
-<option value="rooftop">Rooftop</option>
-<option value="indoor">Indoor</option>
-</select>
-
-<label>Sunlight per day (hours)</label>
-<input type="number" id="sunHours" placeholder="e.g. 6">
-
-<button onclick="recommend()">Get recommendation</button>
-
-<div id="result" class="box"></div> <div id="live" class="section"> <h2>Live plant monitor</h2> <div id="readings" class="box">Waiting for data...</div> <p class="small" id="updated"></p>
-<h2>Alerts</h2>
-<div id="alerts"></div>
-
-<h2>Auto watering (simulation)</h2>
-<div id="pump" class="box"></div>
-<label style="font-weight:normal; margin-top:10px">
-  <input type="checkbox" id="testMode" style="width:auto"> Testing mode (minimum gap 1 minute instead of 6 hours)
-</label>
-<button class="small grey" onclick="resetWaterTest()">Reset watering test</button>
-
-<h2>Harvest tracker</h2>
-<div id="harvest" class="box">
-  <label style="margin-top:0">Planting date</label>
-  <input type="date" id="plantDate">
-  <button class="small" onclick="savePlantDate()">Save date</button>
-  <div id="harvestStatus" style="margin-top:10px"></div>
+<div id="splash">
+  <div class="sbox">
+    <div class="plant"><div class="pot"></div><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div></div>
+    <h2 id="stitle">Growing your garden...</h2>
+    <div class="bar"><div class="fill"></div></div>
+    <button id="enter" onclick="closeSplash()" disabled>Loading...</button>
+  </div>
 </div>
-</div> <script> var CHANNEL_ID = "3519487"; var SAFETY = { stopAtPercent: 90, maxRunSeconds: 20, minGapHours: 6, offlineMinutes: 10, hotTempC: 32, hotFactor: 0.85 }; var ranked = []; var selectedPlant = null; var timer = null; var harvestAlert = null; function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } } function remove(k) { try { localStorage.removeItem(k); } catch (e) {} } function score(plant, input) { if (!plant.areaTypes.includes(input.areaType)) return -1; var area = input.length * input.breadth; if (area < plant.minSpaceCm2) return -1; var s = 10; var max = plant.sunHoursMax; if (input.sunHours >= plant.sunHoursMin && (max === null || input.sunHours <= max)) { if (max === null) { s += 50; } else { s += 50 - 5 * Math.abs(input.sunHours - (plant.sunHoursMin + max) / 2); } } else { var gap = input.sunHours < plant.sunHoursMin ? plant.sunHoursMin - input.sunHours : input.sunHours - max; if (gap <= 1) s += 20; else if (gap <= 2) s += 5; else return -1; } s += 20 * Math.min(1, plant.minSpaceCm2 / area); s -= (plant.lowConfidence ? plant.lowConfidence.length : 0) * 0.5; return Math.round(s * 10) / 10; } function recommend() { var input = { length: Number(document.getElementById("length").value), breadth: Number(document.getElementById("breadth").value), areaType: document.getElementById("areaType").value, sunHours: Number(document.getElementById("sunHours").value) }; var box = document.getElementById("result"); box.style.display = "block"; if (!(input.length > 0) || !(input.breadth > 0) || !(input.sunHours >= 0) || document.getElementById("sunHours").value === "") { box.innerHTML = "Please fill in all four boxes with numbers."; return; } fetch("plants-v2.json") .then(function (r) { return r.json(); }) .then(function (plants) { ranked = plants .map(function (p) { return { plant: p, score: score(p, input) }; }) .filter(function (x) { return x.score >= 0; }) .sort(function (a, b) { return b.score - a.score; }); if (ranked.length === 0) { box.innerHTML = "No plant fits this space. Try a bigger area or a different area type."; document.getElementById("live").style.display = "none"; selectedPlant = null; if (timer) { clearInterval(timer); timer = null; } return; } choosePlant(0); }) .catch(function (err) { box.innerHTML = "Something went wrong: " + err.message + ". Check that plants-v2.json exists in your repo and has no typing errors."; }); } function choosePlant(i) { selectedPlant = ranked[i].plant; var p = selectedPlant; var box = document.getElementById("result"); var conf = (p.lowConfidence && p.lowConfidence.length > 0) ? p.lowConfidence.length + " value(s) are estimates" : "All values verified"; var tempText = (p.tempIdealMin !== null && p.tempIdealMax !== null) ? p.tempIdealMin + " to " + p.tempIdealMax + " °C" : "no reliable range found"; var days = (p.daysToHarvestMin !== null) ? p.daysToHarvestMin + " to " + p.daysToHarvestMax + " days from " + p.daysCountFrom : "no fixed day count, see harvest tips"; var html = (i === 0 ? "Best match:<br>" : "Selected plant:<br>") + "<span class='best'>" + p.name + "</span> (score " + ranked[i].score + ")" + "<div class='limits'>" + "Water when soil moisture is below " + p.waterTriggerPercent + " %<br>" + "Ideal temperature: " + tempText + "<br>" + "Sunlight: " + p.sunHoursMin + (p.sunHoursMax !== null ? " to " + p.sunHoursMax : "+") + " hours<br>" + "Time to harvest: " + days + "<br>" + "Data check: " + conf + "<br>" + "Sources: " + p.sources.join(", ") + "</div>"; if (ranked.length > 1) { html += "<br>Other options:<br>"; for (var j = 0; j < Math.min(ranked.length, 4); j++) { if (j === i) continue; html += ranked[j].plant.name + " (score " + ranked[j].score + ") " + "<button class='small' onclick='choosePlant(" + j + ")'>Use this plant</button><br>"; } } box.innerHTML = html; box.style.display = "block"; document.getElementById("live").style.display = "block"; var saved = load("planted_" + p.name); document.getElementById("plantDate").value = saved ? saved : ""; updateHarvest(); loadLive(); if (timer) clearInterval(timer); timer = setInterval(loadLive, 15000); } function savePlantDate() { if (!selectedPlant) return; var v = document.getElementById("plantDate").value; if (v) { store("planted_" + selectedPlant.name, v); } updateHarvest(); loadLive(); } function updateHarvest() { harvestAlert = null; var out = document.getElementById("harvestStatus"); var p = selectedPlant; if (!p) return; var v = load("planted_" + p.name); if (!v) { out.innerHTML = "Enter the planting date to get harvest reminders.<br><br><b>Ripeness tips:</b> " + p.harvestHint; return; } var start = new Date(v + "T00:00:00"); var day = Math.floor((new Date() - start) / 86400000); var msg = "Day " + day + " since planting.<br>"; if (p.daysToHarvestMin === null) { msg += "This plant has no fixed day count. Check it by size, as described below."; harvestAlert = null; } else if (day < p.daysToHarvestMin) { msg += "Harvest window opens in " + (p.daysToHarvestMin - day) + " days (day " + p.daysToHarvestMin + " to " + p.daysToHarvestMax + ", counted from " + p.daysCountFrom + ")."; } else if (day <= p.daysToHarvestMax) { msg += "<b>Harvest window is open.</b> Check ripeness now."; harvestAlert = "Harvest window is open for " + p.name + " (day " + day + "). Check ripeness."; } else { msg += "<b>Past the usual window</b> (day " + p.daysToHarvestMax + "). Check the plant now and pick if ready."; harvestAlert = p.name + " is past the usual harvest window. Check and pick if ready."; } out.innerHTML = msg + "<br><br><b>Ripeness tips:</b> " + p.harvestHint; } function num(v) { return (v === null || v === undefined || v === "") ? null : Number(v); } function resetWaterTest() { remove("lastWater"); document.getElementById("pump").innerHTML = "Watering test reset. Checking the latest reading..."; loadLive(); } function loadLive() { if (!selectedPlant) return; var url = "https://api.thingspeak.com/channels/" + CHANNEL_ID + "/feeds/last.json"; fetch(url) .then(function (r) { return r.json(); }) .then(function (d) { if (!d || !d.created_at) { document.getElementById("readings").innerHTML = "No sensor data yet."; return; } var moisture = num(d.field1); var temp = num(d.field2); var humidity = num(d.field3); var n = num(d.field4), ph = num(d.field5), k = num(d.field6); var p = selectedPlant; var now = new Date(); var created = new Date(d.created_at); var ageMin = Math.round((now - created) / 60000); var offline = ageMin > SAFETY.offlineMinutes; var npkText = (n === null && ph === null && k === null) ? "waiting for NPK sensor" : n + " / " + ph + " / " + k + " mg/kg"; document.getElementById("readings").innerHTML = "Soil moisture: " + moisture + " % (calibrated: 0 = dry, 100 = soaked)<br>" + "Temperature: " + temp + " °C<br>" + "Humidity: " + humidity + " %<br>" + "N / P / K: " + npkText; document.getElementById("updated").innerHTML = "Last sensor update: " + created.toLocaleString() + " (" + ageMin + " min ago). Page refreshes every 15 seconds."; var dep = p.depletion; var hot = (temp !== null && temp >= SAFETY.hotTempC); if (hot) dep = dep * SAFETY.hotFactor; var trigger = Math.round((1 - dep) * 100); var testing = document.getElementById("testMode").checked; var gapHours = testing ? (1 / 60) : SAFETY.minGapHours; var last = load("lastWater"); var secSince = last ? (now - new Date(last)) / 1000 : null; var pumpMsg = ""; if (moisture === null) { pumpMsg = "No moisture reading. Pump stays OFF."; } else if (offline) { pumpMsg = "Sensor data is " + ageMin + " minutes old (limit " + SAFETY.offlineMinutes + "). Pump stays OFF for safety. Send a fresh reading."; } else if (moisture >= SAFETY.stopAtPercent) { pumpMsg = "Soil moisture is high enough. Pump OFF."; } else if (last && secSince < SAFETY.maxRunSeconds) { pumpMsg = "<b>Pump ON</b> (running, about " + Math.round(SAFETY.maxRunSeconds - secSince) + " seconds left)."; } else if (moisture < trigger) { if (last && secSince < gapHours * 3600) { var left = Math.ceil((gapHours * 3600 - secSince) / 60); pumpMsg = "Soil is dry, but the pump ran recently. Waiting about " + left + " more minute(s) before watering again. Pump OFF."; } else { store("lastWater", now.toISOString()); pumpMsg = "<b>Pump ON</b> for up to " + SAFETY.maxRunSeconds + " seconds, or until moisture reaches " + SAFETY.stopAtPercent + " %."; } } else { pumpMsg = "Moisture is in the good range. Pump OFF."; } document.getElementById("pump").innerHTML = pumpMsg + "<br><br><span class='small'>Water trigger now: below " + trigger + " %" + (hot ? " (raised for hot weather, FAO-56 advice)" : "") + ".<br>Safety limits: stop at " + SAFETY.stopAtPercent + " %, max run " + SAFETY.maxRunSeconds + " s, minimum gap " + (testing ? "1 minute (testing mode)" : SAFETY.minGapHours + " hours") + ", pump off if data is older than " + SAFETY.offlineMinutes + " min. This is a simulation. The ESP will run the same rules.</span>"; var alerts = []; if (offline) alerts.push(["alert", "Sensor has not sent data for " + ageMin + " minutes. Check power and WiFi."]); if (moisture !== null && moisture < trigger) { alerts.push(["alert", "💧 Watering needed. Soil is at " + moisture + " %, limit is " + trigger + " %."]); } if (moisture !== null && moisture > 100) { alerts.push(["notice", "Moisture is above 100 %. Recalibrate the soil sensor."]); } if (temp !== null) { if (p.tempLimitMax !== null && temp > p.tempLimitMax) { alerts.push(["alert", "🌡️ Too hot for " + p.name + " (" + temp + " °C, limit " + p.tempLimitMax + " °C). Move to shade."]); } else if (p.tempLimitMin !== null && temp < p.tempLimitMin) { alerts.push(["alert", "🥶 Too cold for " + p.name + " (" + temp + " °C, limit " + p.tempLimitMin + " °C)."]); } else if (p.tempIdealMin !== null && p.tempIdealMax !== null && (temp < p.tempIdealMin || temp > p.tempIdealMax)) { alerts.push(["notice", "Temperature " + temp + " °C is outside the ideal range (" + p.tempIdealMin + " to " + p.tempIdealMax + " °C)."]); } } if (harvestAlert) alerts.push(["info", "🧺 " + harvestAlert]); if (alerts.length === 0) alerts.push(["info", "✅ No problems found."]); var ah = ""; alerts.forEach(function (a) { ah += "<div class='box " + a[0] + "'>" + a[1] + "</div>"; }); document.getElementById("alerts").innerHTML = ah; }) .catch(function () { document.getElementById("readings").innerHTML = "Could not read sensor data. Check that the channel is shared publicly."; }); } </script> </body> </html>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Smart Garden 🌱</h1>
+    <p>Pick the right plant for your space, then let sensors look after it.</p>
+  </div>
+
+  <div class="card fact">
+    <h2>🌿 Fact of the day</h2>
+    <div id="fact"></div>
+  </div>
+
+  <div class="card">
+    <h2>Your space</h2>
+    <div class="row">
+      <div><label>Length (cm)</label><input type="number" id="length" placeholder="e.g. 150"></div>
+      <div><label>Breadth (cm)</label><input type="number" id="breadth" placeholder="e.g. 60"></div>
+    </div>
+    <label>Area type</label>
+    <select id="areaType">
+      <option value="balcony">Balcony</option>
+      <option value="rooftop">Rooftop</option>
+      <option value="indoor">Indoor</option>
+    </select>
+    <label>Sunlight per day (hours)</label>
+    <input type="number" id="sunHours" placeholder="e.g. 6">
+    <button onclick="recommend()">Get recommendation</button>
+    <div id="result" class="box"></div>
+  </div>
+
+  <div id="live" class="section">
+    <div class="card">
+      <h2>Live plant monitor</h2>
+      <div id="readings" class="box">Waiting for data...</div>
+      <p class="small" id="updated"></p>
+    </div>
+    <div class="card">
+      <h2>Alerts</h2>
+      <div id="alerts"></div>
+    </div>
+    <div class="card">
+      <h2>Auto watering (simulation)</h2>
+      <div id="pump" class="box"></div>
+      <label style="font-weight:normal; margin-top:10px"><input type="checkbox" id="testMode" style="width:auto"> Testing mode (minimum gap 1 minute instead of 6 hours)</label>
+      <button class="small grey" onclick="resetWaterTest()">Reset watering test</button>
+    </div>
+    <div class="card">
+      <h2>Harvest tracker</h2>
+      <div id="harvest" class="box">
+        <label style="margin-top:0">Planting date</label>
+        <input type="date" id="plantDate">
+        <button class="small" onclick="savePlantDate()">Save date</button>
+        <div id="harvestStatus" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var CHANNEL_ID = "3519487";
+  var SAFETY = { stopAtPercent: 90, maxRunSeconds: 20, minGapHours: 6, offlineMinutes: 10, hotTempC: 32, hotFactor: 0.85 };
+  var ranked = [];
+  var selectedPlant = null;
+  var timer = null;
+  var harvestAlert = null;
+  var plantsCache = null;
+
+  var FACTS = [
+    "Tomato fruit struggles to turn red above about 32 C. In very hot weather it can stay orange. That is heat, not disease.",
+    "Mint spreads fast. Growing it in its own pot keeps it from taking over.",
+    "Green onions regrow. Cut the leaves and leave the base, and new leaves come back several times.",
+    "Cucumbers are best picked young, while the skin is still dark green. Yellow ones have hard seeds.",
+    "Radishes can be ready in 25 to 45 days, among the fastest crops you can grow.",
+    "Green chillies are the early pickings. Left on the plant, the fruit turns red and ripe.",
+    "Brinjal is picked while the skin is glossy and tender. Late fruit turns dull and hard.",
+    "Water running out of the pot bottom is a good sign. It means the whole root ball got wet.",
+    "Bean flowers start to drop above about 32 C, so hot spells can cut your harvest.",
+    "Spinach likes cool weather, about 13 to 16 C. It bolts in heat, which is why Mumbai is hard for it.",
+    "Irrigation guidance (FAO-56) lets spinach lose only 20 percent of usable soil water before stress, but tomato 40 percent.",
+    "Most vegetables like soil that stays evenly moist, not soggy. That is what the moisture sensor tracks."
+  ];
+
+  function closeSplash() {
+    var s = document.getElementById("splash");
+    s.className = "hide";
+    setTimeout(function () { s.style.display = "none"; }, 650);
+  }
+
+  document.getElementById("fact").textContent = FACTS[Math.floor(Date.now() / 86400000) % FACTS.length];
+
+  function getPlants() {
+    if (plantsCache) return Promise.resolve(plantsCache);
+    return fetch("plants-v2.json")
+      .then(function (r) {
+        if (!r.ok) throw new Error("plants-v2.json was not found (code " + r.status + ")");
+        return r.text();
+      })
+      .then(function (t) {
+        var p;
+        try { p = JSON.parse(t); } catch (e) { throw new Error("plants-v2.json was not found next to index.html, or has a typing error"); }
+        plantsCache = p;
+        return p;
+      });
+  }
+
+  getPlants().catch(function () {});
+  setTimeout(function () {
+    var b = document.getElementById("enter");
+    b.disabled = false;
+    b.textContent = "Open my garden";
+    document.getElementById("stitle").textContent = "Your garden is ready";
+  }, 3200);
+
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function remove(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function score(plant, input) {
+    if (!plant.areaTypes.includes(input.areaType)) return -1;
+    var area = input.length * input.breadth;
+    if (area < plant.minSpaceCm2) return -1;
+    var s = 10;
+    var max = plant.sunHoursMax;
+    if (input.sunHours >= plant.sunHoursMin && (max === null || input.sunHours <= max)) {
+      if (max === null) { s += 50; }
+      else { s += 50 - 5 * Math.abs(input.sunHours - (plant.sunHoursMin + max) / 2); }
+    } else {
+      var gap = input.sunHours < plant.sunHoursMin ? plant.sunHoursMin - input.sunHours : input.sunHours - max;
+      if (gap <= 1) s += 20;
+      else if (gap <= 2) s += 5;
+      else return -1;
+    }
+    s += 20 * Math.min(1, plant.minSpaceCm2 / area);
+    s -= (plant.lowConfidence ? plant.lowConfidence.length : 0) * 0.5;
+    return Math.round(s * 10) / 10;
+  }
+
+  function recommend() {
+    var input = {
+      length: Number(document.getElementById("length").value),
+      breadth: Number(document.getElementById("breadth").value),
+      areaType: document.getElementById("areaType").value,
+      sunHours: Number(document.getElementById("sunHours").value)
+    };
+    var box = document.getElementById("result");
+    box.style.display = "block";
+    if (!(input.length > 0) || !(input.breadth > 0) || document.getElementById("sunHours").value === "") {
+      box.innerHTML = "Please fill in all four boxes with numbers.";
+      return;
+    }
+    box.innerHTML = "🌱 Finding the best plants for your space...";
+    getPlants()
+      .then(function (plants) {
+        ranked = plants
+          .map(function (p) { return { plant: p, score: score(p, input) }; })
+          .filter(function (x) { return x.score >= 0; })
+          .sort(function (a, b) { return b.score - a.score; });
+        if (ranked.length === 0) {
+          box.innerHTML = "No plant fits this space. Try a bigger area or a different area type.";
+          document.getElementById("live").style.display = "none";
+          selectedPlant = null;
+          if (timer) { clearInterval(timer); timer = null; }
+          return;
+        }
+        choosePlant(0);
+      })
+      .catch(function (err) {
+        box.innerHTML = "Something went wrong: " + err.message + ". Check that plants-v2.json exists in your repo.";
+      });
+  }
+
+  function choosePlant(i) {
+    selectedPlant = ranked[i].plant;
+    var p = selectedPlant;
+    var box = document.getElementById("result");
+    var conf = (p.lowConfidence && p.lowConfidence.length > 0) ? p.lowConfidence.length + " value(s) are estimates" : "All values verified";
+    var tempText = (p.tempIdealMin !== null && p.tempIdealMax !== null) ? p.tempIdealMin + " to " + p.tempIdealMax + " °C" : "no reliable range found";
+    var days = (p.daysToHarvestMin !== null) ? p.daysToHarvestMin + " to " + p.daysToHarvestMax + " days from " + p.daysCountFrom : "no fixed day count, see harvest tips";
+    var html = (i === 0 ? "Best match:<br>" : "Selected plant:<br>") +
+      "<span class='best'>" + p.name + "</span> (score " + ranked[i].score + ")" +
+      "<div class='limits'>Water when soil moisture is below " + p.waterTriggerPercent + " %<br>" +
+      "Ideal temperature: " + tempText + "<br>" +
+      "Sunlight: " + p.sunHoursMin + (p.sunHoursMax !== null ? " to " + p.sunHoursMax : "+") + " hours<br>" +
+      "Time to harvest: " + days + "<br>Data check: " + conf + "<br>Sources: " + p.sources.join(", ") + "</div>";
+    if (ranked.length > 1) {
+      html += "<br>Other options:<br>";
+      for (var j = 0; j < Math.min(ranked.length, 4); j++) {
+        if (j === i) continue;
+        html += ranked[j].plant.name + " (score " + ranked[j].score + ") <button class='small' onclick='choosePlant(" + j + ")'>Use this plant</button><br>";
+      }
+    }
+    box.innerHTML = html;
+    document.getElementById("live").style.display = "block";
+    var saved = load("planted_" + p.name);
+    document.getElementById("plantDate").value = saved ? saved : "";
+    updateHarvest();
+    loadLive();
+    if (timer) clearInterval(timer);
+    timer = setInterval(loadLive, 15000);
+  }
+
+  function savePlantDate() {
+    if (!selectedPlant) return;
+    var v = document.getElementById("plantDate").value;
+    if (v) { store("planted_" + selectedPlant.name, v); }
+    updateHarvest();
+    loadLive();
+  }
+
+  function updateHarvest() {
+    harvestAlert = null;
+    var out = document.getElementById("harvestStatus");
+    var p = selectedPlant;
+    if (!p) return;
+    var v = load("planted_" + p.name);
+    if (!v) {
+      out.innerHTML = "Enter the planting date to get harvest reminders.<br><br><b>Ripeness tips:</b> " + p.harvestHint;
+      return;
+    }
+    var day = Math.floor((new Date() - new Date(v + "T00:00:00")) / 86400000);
+    var msg = "Day " + day + " since planting.<br>";
+    if (p.daysToHarvestMin === null) {
+      msg += "This plant has no fixed day count. Check it by size, as described below.";
+    } else if (day < p.daysToHarvestMin) {
+      msg += "Harvest window opens in " + (p.daysToHarvestMin - day) + " days (day " + p.daysToHarvestMin + " to " + p.daysToHarvestMax + ", counted from " + p.daysCountFrom + ").";
+    } else if (day <= p.daysToHarvestMax) {
+      msg += "<b>Harvest window is open.</b> Check ripeness now.";
+      harvestAlert = "Harvest window is open for " + p.name + " (day " + day + "). Check ripeness.";
+    } else {
+      msg += "<b>Past the usual window</b> (day " + p.daysToHarvestMax + "). Check the plant now and pick if ready.";
+      harvestAlert = p.name + " is past the usual harvest window. Check and pick if ready.";
+    }
+    out.innerHTML = msg + "<br><br><b>Ripeness tips:</b> " + p.harvestHint;
+  }
+
+  function num(v) { return (v === null || v === undefined || v === "") ? null : Number(v); }
+
+  function resetWaterTest() {
+    remove("lastWater");
+    document.getElementById("pump").innerHTML = "Watering test reset. Checking the latest reading...";
+    loadLive();
+  }
+
+  function loadLive() {
+    if (!selectedPlant) return;
+    fetch("https://api.thingspeak.com/channels/" + CHANNEL_ID + "/feeds/last.json")
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.created_at) { document.getElementById("readings").innerHTML = "No sensor data yet."; return; }
+        var moisture = num(d.field1), temp = num(d.field2), humidity = num(d.field3);
+        var n = num(d.field4), ph = num(d.field5), k = num(d.field6);
+        var p = selectedPlant;
+        var now = new Date();
+        var created = new Date(d.created_at);
+        var ageMin = Math.round((now - created) / 60000);
+        var offline = ageMin > SAFETY.offlineMinutes;
+        var npkText = (n === null && ph === null && k === null) ? "waiting for NPK sensor" : n + " / " + ph + " / " + k + " mg/kg";
+
+        document.getElementById("readings").innerHTML =
+          "💧 Soil moisture: " + moisture + " %<br>🌡️ Temperature: " + temp + " °C<br>☁️ Humidity: " + humidity + " %<br>🧪 N / P / K: " + npkText;
+        document.getElementById("updated").innerHTML =
+          "Last sensor update: " + created.toLocaleString() + " (" + ageMin + " min ago). Refreshes every 15 seconds.";
+
+        var dep = p.depletion;
+        var hot = (temp !== null && temp >= SAFETY.hotTempC);
+        if (hot) dep = dep * SAFETY.hotFactor;
+        var trigger = Math.round((1 - dep) * 100);
+
+        var testing = document.getElementById("testMode").checked;
+        var gapHours = testing ? (1 / 60) : SAFETY.minGapHours;
+        var last = load("lastWater");
+        var secSince = last ? (now - new Date(last)) / 1000 : null;
+        var pumpMsg = "";
+
+        if (moisture === null) {
+          pumpMsg = "No moisture reading. Pump stays OFF.";
+        } else if (offline) {
+          pumpMsg = "Sensor data is " + ageMin + " minutes old (limit " + SAFETY.offlineMinutes + "). Pump stays OFF for safety. Send a fresh reading.";
+        } else if (moisture >= SAFETY.stopAtPercent) {
+          pumpMsg = "Soil moisture is high enough. Pump OFF.";
+        } else if (last && secSince < SAFETY.maxRunSeconds) {
+          pumpMsg = "<b>Pump ON</b> (running, about " + Math.round(SAFETY.maxRunSeconds - secSince) + " seconds left).";
+        } else if (moisture < trigger) {
+          if (last && secSince < gapHours * 3600) {
+            pumpMsg = "Soil is dry, but the pump ran recently. Waiting about " + Math.ceil((gapHours * 3600 - secSince) / 60) + " more minute(s) before watering again. Pump OFF.";
+          } else {
+            store("lastWater", now.toISOString());
+            pumpMsg = "<b>Pump ON</b> for up to " + SAFETY.maxRunSeconds + " seconds, or until moisture reaches " + SAFETY.stopAtPercent + " %.";
+          }
+        } else {
+          pumpMsg = "Moisture is in the good range. Pump OFF.";
+        }
+
+        document.getElementById("pump").innerHTML =
+          pumpMsg + "<br><br><span class='small'>Water trigger now: below " + trigger + " %" + (hot ? " (raised for hot weather, FAO-56 advice)" : "") +
+          ".<br>Safety limits: stop at " + SAFETY.stopAtPercent + " %, max run " + SAFETY.maxRunSeconds + " s, minimum gap " +
+          (testing ? "1 minute (testing mode)" : SAFETY.minGapHours + " hours") + ", pump off if data is older than " + SAFETY.offlineMinutes +
+          " min. This is a simulation. The board runs the same rules.</span>";
+
+        var alerts = [];
+        if (offline) alerts.push(["alert", "Sensor has not sent data for " + ageMin + " minutes. Check power and WiFi."]);
+        if (moisture !== null && moisture < trigger) alerts.push(["alert", "💧 Watering needed. Soil is at " + moisture + " %, limit is " + trigger + " %."]);
+        if (moisture !== null && moisture > 100) alerts.push(["notice", "Moisture is above 100 %. Recalibrate the soil sensor."]);
+        if (temp !== null) {
+          if (p.tempLimitMax !== null && temp > p.tempLimitMax) {
+            alerts.push(["alert", "🌡️ Too hot for " + p.name + " (" + temp + " °C, limit " + p.tempLimitMax + " °C). Move to shade."]);
+          } else if (p.tempLimitMin !== null && temp < p.tempLimitMin) {
+            alerts.push(["alert", "🥶 Too cold for " + p.name + " (" + temp + " °C, limit " + p.tempLimitMin + " °C)."]);
+          } else if (p.tempIdealMin !== null && p.tempIdealMax !== null && (temp < p.tempIdealMin || temp > p.tempIdealMax)) {
+            alerts.push(["notice", "Temperature " + temp + " °C is outside the ideal range (" + p.tempIdealMin + " to " + p.tempIdealMax + " °C)."]);
+          }
+        }
+        if (harvestAlert) alerts.push(["info", "🧺 " + harvestAlert]);
+        if (alerts.length === 0) alerts.push(["info", "✅ No problems found."]);
+        var ah = "";
+        alerts.forEach(function (a) { ah += "<div class='box " + a[0] + "'>" + a[1] + "</div>"; });
+        document.getElementById("alerts").innerHTML = ah;
+      })
+      .catch(function () {
+        document.getElementById("readings").innerHTML = "Could not read sensor data. Check that the channel is shared publicly.";
+      });
+  }
+</script>
+</body>
+</html>
