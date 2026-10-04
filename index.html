@@ -137,6 +137,8 @@
   var timer = null;
   var harvestAlert = null;
   var plantsCache = null;
+  var allPlants = [];
+  var lastInput = null;
 
   var FACTS = [
     "Tomato fruit struggles to turn red above about 32 C. In very hot weather it can stay orange. That is heat, not disease.",
@@ -219,6 +221,27 @@
     return Math.round(s * 10) / 10;
   }
 
+  function reasonFor(p, input) {
+    if (!p.areaTypes.includes(input.areaType)) return "not suited to " + input.areaType + " growing";
+    var area = input.length * input.breadth;
+    if (area < p.minSpaceCm2) return "needs about " + p.minSpaceCm2 + " cm2, you have " + area + " cm2";
+    var max = p.sunHoursMax;
+    if (input.sunHours < p.sunHoursMin - 2) return "needs at least " + p.sunHoursMin + " hours of sunlight, you have " + input.sunHours;
+    if (max !== null && input.sunHours > max + 2) return "prefers " + p.sunHoursMin + " to " + max + " hours of sunlight, you have " + input.sunHours;
+    return null;
+  }
+
+  function notSuitableHtml() {
+    if (!lastInput) return "";
+    var rows = "";
+    allPlants.forEach(function (p) {
+      var r = reasonFor(p, lastInput);
+      if (r) rows += "<b>" + p.name + "</b>: " + r + "<br>";
+    });
+    if (rows === "") return "";
+    return "<details style='margin-top:12px'><summary>Plants not suitable for this space</summary><div class='limits'>" + rows + "</div></details>";
+  }
+
   function recommend() {
     var input = {
       length: Number(document.getElementById("length").value),
@@ -232,15 +255,17 @@
       box.innerHTML = "Please fill in all four boxes with numbers.";
       return;
     }
+    lastInput = input;
     box.innerHTML = "🌱 Finding the best plants for your space...";
     getPlants()
       .then(function (plants) {
+        allPlants = plants;
         ranked = plants
           .map(function (p) { return { plant: p, score: score(p, input) }; })
           .filter(function (x) { return x.score >= 0; })
           .sort(function (a, b) { return b.score - a.score; });
         if (ranked.length === 0) {
-          box.innerHTML = "No plant fits this space. Try a bigger area or a different area type.";
+          box.innerHTML = "No plant fits this space. Try a bigger area, a different area type, or more sunlight." + notSuitableHtml();
           document.getElementById("live").style.display = "none";
           selectedPlant = null;
           if (timer) { clearInterval(timer); timer = null; }
@@ -260,8 +285,14 @@
     var conf = (p.lowConfidence && p.lowConfidence.length > 0) ? p.lowConfidence.length + " value(s) are estimates" : "All values verified";
     var tempText = (p.tempIdealMin !== null && p.tempIdealMax !== null) ? p.tempIdealMin + " to " + p.tempIdealMax + " °C" : "no reliable range found";
     var days = (p.daysToHarvestMin !== null) ? p.daysToHarvestMin + " to " + p.daysToHarvestMax + " days from " + p.daysCountFrom : "no fixed day count, see harvest tips";
+    var fitNote = "";
+    if (lastInput && lastInput.sunHours < p.sunHoursMin) {
+      fitNote = "<div class='box notice'>Weak fit: " + p.name + " needs at least " + p.sunHoursMin + " hours of sunlight and you have " + lastInput.sunHours + ". Growth may be poor. A grow light can make up some of the difference.</div>";
+    } else if (lastInput && p.sunHoursMax !== null && lastInput.sunHours > p.sunHoursMax) {
+      fitNote = "<div class='box notice'>Weak fit: " + p.name + " prefers " + p.sunHoursMin + " to " + p.sunHoursMax + " hours of sunlight and you have " + lastInput.sunHours + ".</div>";
+    }
     var html = (i === 0 ? "Best match:<br>" : "Selected plant:<br>") +
-      "<span class='best'>" + p.name + "</span> (score " + ranked[i].score + ")" +
+      "<span class='best'>" + p.name + "</span> (score " + ranked[i].score + ")" + fitNote +
       "<div class='limits'>Water when soil moisture is below " + p.waterTriggerPercent + " %<br>" +
       "Ideal temperature: " + tempText + "<br>" +
       "Sunlight: " + p.sunHoursMin + (p.sunHoursMax !== null ? " to " + p.sunHoursMax : "+") + " hours<br>" +
@@ -273,6 +304,7 @@
         html += ranked[j].plant.name + " (score " + ranked[j].score + ") <button class='small' onclick='choosePlant(" + j + ")'>Use this plant</button><br>";
       }
     }
+    html += notSuitableHtml();
     box.innerHTML = html;
     document.getElementById("live").style.display = "block";
     var saved = load("planted_" + p.name);
