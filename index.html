@@ -39,14 +39,19 @@
   #splash { position: fixed; inset: 0; background: linear-gradient(160deg, #1b5e20, #66bb6a); z-index: 99; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s; }
   #splash.hide { opacity: 0; pointer-events: none; }
   .sbox { width: 88%; max-width: 380px; text-align: center; color: #fff; }
-  .plant { position: relative; height: 110px; width: 60px; margin: 0 auto 10px; }
-  .pot { position: absolute; bottom: 0; left: 8px; width: 44px; height: 24px; background: #8d6e63; border-radius: 0 0 10px 10px; }
-  .stem { position: absolute; bottom: 24px; left: 27px; width: 6px; height: 0; background: #c8e6c9; border-radius: 3px; animation: grow 3s ease-out forwards; }
-  .leaf { position: absolute; width: 28px; height: 16px; background: #e8f5e9; opacity: 0; animation: pop 0.6s forwards; }
-  .l1 { bottom: 70px; left: 31px; border-radius: 0 100% 0 100%; animation-delay: 1.6s; }
-  .l2 { bottom: 88px; left: 3px; border-radius: 100% 0 100% 0; animation-delay: 2.3s; }
-  @keyframes grow { to { height: 80px; } }
-  @keyframes pop { to { opacity: 1; } }
+  .plant { position: relative; height: 150px; width: 80px; margin: 0 auto 10px; }
+  .pot { position: absolute; bottom: 0; left: 18px; width: 44px; height: 24px; background: #8d6e63; border-radius: 0 0 10px 10px; }
+  .stem { position: absolute; bottom: 24px; left: 37px; width: 6px; height: 0; background: #c8e6c9; border-radius: 3px; animation: grow 2.6s ease-out forwards; }
+  .leaf { position: absolute; width: 30px; height: 17px; background: #e8f5e9; opacity: 0; animation: pop 0.5s forwards; }
+  .lr { left: 43px; border-radius: 0 100% 0 100%; transform-origin: left center; }
+  .ll { left: 7px; border-radius: 100% 0 100% 0; transform-origin: right center; }
+  .l1 { bottom: 46px; animation-delay: 0.8s; }
+  .l2 { bottom: 68px; animation-delay: 1.2s; }
+  .l3 { bottom: 90px; animation-delay: 1.6s; }
+  .l4 { bottom: 110px; animation-delay: 2s; }
+  .flower { position: absolute; bottom: 124px; left: 29px; width: 22px; height: 22px; background: #ffd54f; border-radius: 50%; box-shadow: 0 -14px 0 -3px #fff, 0 14px 0 -3px #fff, -14px 0 0 -3px #fff, 14px 0 0 -3px #fff; opacity: 0; animation: pop 0.5s 2.6s forwards; }
+  @keyframes grow { to { height: 110px; } }
+  @keyframes pop { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
   .bar { height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; margin: 14px 0; }
   .fill { height: 100%; width: 0; background: #fff; animation: load 3s linear forwards; }
   @keyframes load { to { width: 100%; } }
@@ -60,7 +65,7 @@
 
 <div id="splash">
   <div class="sbox">
-    <div class="plant"><div class="pot"></div><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div></div>
+    <div class="plant"><div class="pot"></div><div class="stem"></div><div class="leaf lr l1"></div><div class="leaf ll l2"></div><div class="leaf lr l3"></div><div class="leaf ll l4"></div><div class="flower"></div></div>
     <h2 id="stitle">Growing your garden...</h2>
     <div class="bar"><div class="fill"></div></div>
     <button id="enter" onclick="closeSplash()" disabled>Loading...</button>
